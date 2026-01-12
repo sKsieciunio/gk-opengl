@@ -8,11 +8,19 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "InputHandler.h"
+#include "sphereGenerator.h"
+
+#include <vector>
+#include <cmath>
 
 const unsigned int SCR_WIDTH = 1000;
 const unsigned int SCR_HEIGHT = 800;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 6.0f));
+
+glm::vec3 lightPos(6.0f, 5.0f, 0.0f);
+glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+glm::vec3 sphereColor(1.0f, 0.5f, 0.31f);
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -47,8 +55,9 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader basicShader("shaders/shader.vs.glsl", "shaders/shader.fs.glsl");
-
+    Shader colorShader("shaders/color.vs.glsl", "shaders/color.fs.glsl");
+    Shader normalShader("shaders/normal.vs.glsl", "shaders/normal.fs.glsl");
+    Shader phongShader("shaders/phong.vs.glsl", "shaders/phong.fs.glsl");
     float vertices1[] = {
         // positions      // colors
         1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f,   // v0 - red
@@ -85,6 +94,33 @@ int main()
 
     glBindVertexArray(0);
 
+    // Sphere data
+    std::vector<float> sphereVertices;
+    std::vector<unsigned int> sphereIndices;
+    generateSphere(1.0f, 36, sphereVertices, sphereIndices);
+
+    unsigned int VAO2, VBO2, EBO2;
+    glGenVertexArrays(1, &VAO2);
+    glGenBuffers(1, &VBO2);
+    glGenBuffers(1, &EBO2);
+
+    glBindVertexArray(VAO2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sphereVertices.size() * sizeof(float), sphereVertices.data(), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphereIndices.size() * sizeof(unsigned int), sphereIndices.data(), GL_STATIC_DRAW);
+
+    // position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+    glEnableVertexAttribArray(0);
+    // normal
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0);
+
     while (!glfwWindowShouldClose(window))
     {
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -96,21 +132,48 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        basicShader.use();
-
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
 
-        // animation
-        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        // tetrahedron
+        colorShader.use();
+        colorShader.setMat4("projection", projection);
+        colorShader.setMat4("view", view);
 
-        basicShader.setMat4("projection", projection);
-        basicShader.setMat4("view", view);
-        basicShader.setMat4("model", model);
+        model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
+        colorShader.setMat4("model", model);
 
         glBindVertexArray(VAO1);
         glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
+
+        // Sphere
+        normalShader.use();
+        normalShader.setMat4("projection", projection);
+        normalShader.setMat4("view", view);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(3.0f, 0.0f, 0.0f));
+        normalShader.setMat4("model", model);
+
+        glBindVertexArray(VAO2);
+        glDrawElements(GL_TRIANGLES, (GLsizei)sphereIndices.size(), GL_UNSIGNED_INT, 0);
+
+        // second sphere
+        phongShader.use();
+        phongShader.setMat4("projection", projection);
+        phongShader.setMat4("view", view);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(6.0f, 0.0f, 0.0f));
+        phongShader.setMat4("model", model);
+        phongShader.setVec3("objectColor", sphereColor);
+        phongShader.setVec3("lightColor", lightColor);
+        phongShader.setVec3("lightPos", lightPos + 3.0f * glm::vec3(sin(glfwGetTime()), 0.0f, cos(glfwGetTime())));
+        phongShader.setVec3("viewPos", camera.Position);
+
+        glBindVertexArray(VAO2);
+        glDrawElements(GL_TRIANGLES, (GLsizei)sphereIndices.size(), GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -119,6 +182,10 @@ int main()
     glDeleteVertexArrays(1, &VAO1);
     glDeleteBuffers(1, &VBO1);
     glDeleteBuffers(1, &EBO1);
+
+    glDeleteVertexArrays(1, &VAO2);
+    glDeleteBuffers(1, &VBO2);
+    glDeleteBuffers(1, &EBO2);
 
     glfwTerminate();
     return 0;
