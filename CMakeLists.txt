@@ -23,6 +23,7 @@ set(IMGUI_SOURCES
 
 set(APP_SOURCES
     ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/InputHandler.cpp
 )
 
 add_executable(${PROJECT_NAME}
@@ -52,15 +53,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     OpenGL::GL
     glfw3_mt
     glew32s
-    # user32
-    # gdi32
-    # shell32
-    # advapi32
-    # ole32
-    # uuid
-    # winmm
-    # ws2_32
-    # bcrypt
 )
 
 # Copy shaders to build directory
