@@ -45,6 +45,12 @@ int main()
     Scene scene(SCR_WIDTH, SCR_HEIGHT);
     glfwSetWindowUserPointer(window, &scene);
 
+    Camera *camera = new Camera(glm::vec3(0.0f, 0.0f, 6.0f));
+    scene.AddCamera(camera);
+
+    Light *light = new Light(glm::vec3(6.0f, 5.0f, 0.0f));
+    scene.AddLight(light);
+
     ShaderManager shaderManager;
     Shader *colorShader = shaderManager.LoadShader("color", "shaders/color.vs.glsl", "shaders/color.fs.glsl");
     Shader *normalShader = shaderManager.LoadShader("normal", "shaders/normal.vs.glsl", "shaders/normal.fs.glsl");

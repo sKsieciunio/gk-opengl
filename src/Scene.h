@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Shape.h"
 #include "Shader.h"
+#include "Light.h"
 
 class Scene
 {
@@ -16,13 +17,19 @@ public:
     void Update(float deltaTime);
     void Draw();
     void AddShape(Shape *shape, Shader *shader);
+    void AddLight(Light *light);
+    void AddCamera(Camera *camera);
+    void SetActiveCamera(int index);
 
-    Camera *GetCamera() { return camera; }
+    Camera *GetActiveCamera() { return activeCamera; }
 
-    glm::vec3 GetLightPos() { return lightPos; }
+    const std::vector<Light *> &GetLights() const { return lights; }
 
 private:
-    Camera *camera;
+    Camera *activeCamera;
+    std::vector<Camera *> cameras;
+    std::vector<Light *> lights;
+
     int scrWidth, scrHeight;
 
     struct RenderObject
@@ -31,7 +38,4 @@ private:
         Shader *shader;
     };
     std::vector<RenderObject> objects;
-
-    glm::vec3 lightPos;
-    glm::vec3 lightColor;
 };

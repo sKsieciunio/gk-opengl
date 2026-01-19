@@ -7,18 +7,21 @@ float lastY = 400.0f;
 bool firstMouse = true;
 
 // Helper to get camera from window user pointer
-Camera* getCamera(GLFWwindow* window) {
-    Scene* scene = static_cast<Scene*>(glfwGetWindowUserPointer(window));
-    if (scene) {
-        return scene->GetCamera();
+Camera *getCamera(GLFWwindow *window)
+{
+    Scene *scene = static_cast<Scene *>(glfwGetWindowUserPointer(window));
+    if (scene)
+    {
+        return scene->GetActiveCamera();
     }
     return nullptr;
 }
 
 void processInput(GLFWwindow *window, float deltaTime)
 {
-    Camera* camera = getCamera(window);
-    if (!camera) return;
+    Camera *camera = getCamera(window);
+    if (!camera)
+        return;
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -44,8 +47,9 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
 {
-    Camera* camera = getCamera(window);
-    if (!camera) return;
+    Camera *camera = getCamera(window);
+    if (!camera)
+        return;
 
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
@@ -68,8 +72,9 @@ void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
-    Camera* camera = getCamera(window);
-    if (!camera) return;
+    Camera *camera = getCamera(window);
+    if (!camera)
+        return;
 
     camera->ProcessMouseScroll(static_cast<float>(yoffset));
 }

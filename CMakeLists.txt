@@ -26,6 +26,7 @@ set(APP_SOURCES
     ${SRC_DIR}/InputHandler.cpp
     ${SRC_DIR}/Shape.cpp
     ${SRC_DIR}/Scene.cpp
+    ${SRC_DIR}/Light.cpp
     ${SRC_DIR}/ShaderManager.cpp
 )
 
