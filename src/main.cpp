@@ -120,9 +120,7 @@ int main()
         // Process Input via InputHandler (handled keys + toggles)
         inputHandler.ProcessInput(deltaTime);
 
-        // TODO: maybe get rid of this
-        scene.Update(deltaTime);
-
+        light->position = glm::vec3(6.0f, 5.0f, 0.0f) + 3.0f * glm::vec3(sin(glfwGetTime()), 0.0f, cos(glfwGetTime()));
         tetrahedron->SetRotation((float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
 
         // Start the Dear ImGui frame

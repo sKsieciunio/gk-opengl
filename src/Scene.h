@@ -14,7 +14,6 @@ public:
     Scene(int width, int height);
     ~Scene();
 
-    void Update(float deltaTime);
     void Draw();
     void AddShape(Shape *shape, Shader *shader);
     void AddLight(Light *light);

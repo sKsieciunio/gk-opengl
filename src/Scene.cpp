@@ -50,15 +50,6 @@ void Scene::AddShape(Shape *shape, Shader *shader)
     objects.push_back({shape, shader});
 }
 
-void Scene::Update(float deltaTime)
-{
-    // Example: animate first light if it exists
-    if (!lights.empty())
-    {
-        lights[0]->position = glm::vec3(6.0f, 5.0f, 0.0f) + 3.0f * glm::vec3(sin(glfwGetTime()), 0.0f, cos(glfwGetTime()));
-    }
-}
-
 void Scene::Draw()
 {
     if (!activeCamera)
