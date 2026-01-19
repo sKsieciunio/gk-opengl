@@ -64,7 +64,7 @@ void Scene::Draw()
     if (!activeCamera)
         return;
 
-    glm::mat4 projection = glm::perspective(glm::radians(activeCamera->Zoom), (float)scrWidth / (float)scrHeight, 0.1f, 100.0f);
+    glm::mat4 projection = activeCamera->GetProjectionMatrix((float)scrWidth, (float)scrHeight);
     glm::mat4 view = activeCamera->GetViewMatrix();
 
     for (auto &obj : objects)

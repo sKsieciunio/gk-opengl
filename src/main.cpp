@@ -1,5 +1,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "imgui.h"
+#include "backend/imgui_impl_glfw.h"
+#include "backend/imgui_impl_opengl3.h"
+
 #include <iostream>
 #include <vector>
 
@@ -29,10 +33,8 @@ int main()
     }
 
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // Callbacks are now set via InputHandler below
+    // glfwSetInputMode set by InputHandler constructor
 
     if (glewInit() != GLEW_OK)
     {
@@ -42,8 +44,25 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
     Scene scene(SCR_WIDTH, SCR_HEIGHT);
-    glfwSetWindowUserPointer(window, &scene);
+
+    // Input Handler
+    InputHandler inputHandler(window, &scene);
+    glfwSetWindowUserPointer(window, &inputHandler);
+
+    // Register callbacks
+    glfwSetCursorPosCallback(window, InputHandler::MouseCallback);
+    glfwSetScrollCallback(window, InputHandler::ScrollCallback);
+    glfwSetFramebufferSizeCallback(window, InputHandler::FramebufferSizeCallback);
 
     Camera *camera = new Camera(glm::vec3(0.0f, 0.0f, 6.0f));
     scene.AddCamera(camera);
@@ -98,21 +117,58 @@ int main()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        processInput(window, deltaTime);
+        // Process Input via InputHandler (handled keys + toggles)
+        inputHandler.ProcessInput(deltaTime);
 
         // TODO: maybe get rid of this
         scene.Update(deltaTime);
 
         tetrahedron->SetRotation((float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
 
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("Camera Settings");
+        Camera *activeCam = scene.GetActiveCamera();
+        if (activeCam)
+        {
+            const char *projections[] = {"Perspective", "Orthographic"};
+            int currentProj = (int)activeCam->Type;
+            if (ImGui::Combo("Projection", &currentProj, projections, IM_ARRAYSIZE(projections)))
+            {
+                activeCam->Type = (ProjectionType)currentProj;
+            }
+
+            if (activeCam->Type == ProjectionType::Orthographic)
+            {
+                ImGui::SliderFloat("Ortho Size", &activeCam->OrthoHeight, 1.0f, 20.0f);
+            }
+            else
+            {
+                ImGui::SliderFloat("FOV", &activeCam->Zoom, 1.0f, 90.0f);
+            }
+        }
+        ImGui::Text("Press TAB to toggle mouse cursor");
+        ImGui::Text("Press ESC to exit");
+        ImGui::End();
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         scene.Draw();
 
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     glfwTerminate();
 

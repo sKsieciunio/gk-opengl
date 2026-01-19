@@ -1,13 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
 
-enum class LightType
-{
-    Point,
-    Directional,
-    Spot
-};
-
 class Light
 {
 public:
@@ -16,7 +9,6 @@ public:
     glm::vec3 position;
     glm::vec3 color;
     float intensity;
-    LightType type;
 
     // For directional lights, direction is needed instead of position sometimes,
     // or position effectively acts as direction for simple directional implementations.

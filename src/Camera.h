@@ -16,6 +16,12 @@ enum Camera_Movement
     DOWN
 };
 
+enum class ProjectionType
+{
+    Perspective,
+    Orthographic
+};
+
 const float YAW = -90.0f;
 const float PITCH = 0.0f;
 const float SPEED = 2.5f;
@@ -38,7 +44,12 @@ public:
     float MouseSensitivity;
     float Zoom;
 
-    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+    // Projection Settings
+    ProjectionType Type;
+    float OrthoHeight; // Height of the orthographic frustum
+
+    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH)
+        : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM), Type(ProjectionType::Perspective), OrthoHeight(10.0f)
     {
         Position = position;
         WorldUp = up;
@@ -50,6 +61,21 @@ public:
     glm::mat4 GetViewMatrix()
     {
         return glm::lookAt(Position, Position + Front, Up);
+    }
+
+    glm::mat4 GetProjectionMatrix(float width, float height) const
+    {
+        float aspectRatio = width / height;
+        if (Type == ProjectionType::Perspective)
+        {
+            return glm::perspective(glm::radians(Zoom), aspectRatio, 0.1f, 100.0f);
+        }
+        else
+        {
+            float halfHeight = OrthoHeight / 2.0f;
+            float halfWidth = halfHeight * aspectRatio;
+            return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, 0.1f, 100.0f);
+        }
     }
 
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
@@ -93,8 +119,8 @@ public:
         Zoom -= (float)yoffset;
         if (Zoom < 1.0f)
             Zoom = 1.0f;
-        if (Zoom > 45.0f)
-            Zoom = 45.0f;
+        if (Zoom > 90.0f)
+            Zoom = 90.0f;
     }
 
 private:
