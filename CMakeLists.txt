@@ -24,6 +24,9 @@ set(IMGUI_SOURCES
 set(APP_SOURCES
     ${SRC_DIR}/main.cpp
     ${SRC_DIR}/InputHandler.cpp
+    ${SRC_DIR}/Shape.cpp
+    ${SRC_DIR}/Scene.cpp
+    ${SRC_DIR}/ShaderManager.cpp
 )
 
 add_executable(${PROJECT_NAME}

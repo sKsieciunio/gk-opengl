@@ -2,14 +2,17 @@
 
 #include <vector>
 #include <cmath>
+#include <glm/glm.hpp>
+#include "Shape.h" // For Vertex struct
 
-void generateSphere(float radius, int resolution, std::vector<float> &vertices, std::vector<unsigned int> &indices)
+void generateSphere(float radius, int resolution, std::vector<Vertex> &vertices, std::vector<unsigned int> &indices)
 {
     int sectors = resolution;
     int stacks = resolution / 2;
 
     float x, y, z, xz;                           // vertex position
     float nx, ny, nz, lengthInv = 1.0f / radius; // vertex normal
+    float s, t;                                  // vertex texCoord
 
     float sectorStep = 2 * 3.14159f / sectors;
     float stackStep = 3.14159f / stacks;
@@ -32,13 +35,16 @@ void generateSphere(float radius, int resolution, std::vector<float> &vertices, 
             ny = y * lengthInv;
             nz = z * lengthInv;
 
-            vertices.push_back(x);
-            vertices.push_back(y);
-            vertices.push_back(z);
+            s = (float)j / sectors;
+            t = (float)i / stacks;
 
-            vertices.push_back(nx);
-            vertices.push_back(ny);
-            vertices.push_back(nz);
+            Vertex v;
+            v.Position = glm::vec3(x, y, z);
+            v.Color = glm::vec3(1.0f); // Default white
+            v.Normal = glm::vec3(nx, ny, nz);
+            v.TexCoords = glm::vec2(s, t);
+
+            vertices.push_back(v);
         }
     }
 
