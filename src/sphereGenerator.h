@@ -4,6 +4,7 @@
 #include <cmath>
 #include <glm/glm.hpp>
 #include "Shape.h" // For Vertex struct
+#include <random>
 
 void generateSphere(float radius, int resolution, std::vector<Vertex> &vertices, std::vector<unsigned int> &indices)
 {
@@ -17,6 +18,11 @@ void generateSphere(float radius, int resolution, std::vector<Vertex> &vertices,
     float sectorStep = 2 * 3.14159f / sectors;
     float stackStep = 3.14159f / stacks;
     float sectorAngle, stackAngle;
+
+    // for color randomization
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(0.5, 1.0); // Lighter colors
 
     for (int i = 0; i <= stacks; ++i)
     {
@@ -40,7 +46,7 @@ void generateSphere(float radius, int resolution, std::vector<Vertex> &vertices,
 
             Vertex v;
             v.Position = glm::vec3(x, y, z);
-            v.Color = glm::vec3(1.0f); // Default white
+            v.Color = glm::vec3(dis(gen), dis(gen), dis(gen)); // Default white
             v.Normal = glm::vec3(nx, ny, nz);
             v.TexCoords = glm::vec2(s, t);
 

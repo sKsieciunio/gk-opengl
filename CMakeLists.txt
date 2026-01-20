@@ -28,6 +28,7 @@ set(APP_SOURCES
     ${SRC_DIR}/Scene.cpp
     ${SRC_DIR}/Light.cpp
     ${SRC_DIR}/ShaderManager.cpp
+    ${SRC_DIR}/ModelLoader.cpp
 )
 
 add_executable(${PROJECT_NAME}
@@ -64,4 +65,10 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${SRC_DIR}/shaders/"
         "$<TARGET_FILE_DIR:${PROJECT_NAME}>/shaders"
+)
+# copy models to build directory
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${SRC_DIR}/models/"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/models"
 )

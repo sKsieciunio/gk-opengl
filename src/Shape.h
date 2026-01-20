@@ -14,11 +14,11 @@ struct Vertex
     glm::vec2 TexCoords;
 };
 
-class Shape
+class SceneObject
 {
 public:
-    Shape(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices);
-    virtual ~Shape();
+    SceneObject(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices);
+    virtual ~SceneObject();
 
     void Draw(const Shader &shader);
 
@@ -26,11 +26,15 @@ public:
     void SetPosition(const glm::vec3 &pos);
     void SetRotation(float angle, const glm::vec3 &axis);
     void SetScale(const glm::vec3 &scl);
+    void SetObjectColor(const glm::vec3 &color, bool useColor = true);
 
     glm::vec3 position;
     float rotationAngle;
     glm::vec3 rotationAxis;
     glm::vec3 scale;
+
+    bool useObjectColor = false;
+    glm::vec3 objectColor = glm::vec3(1.0f);
 
 private:
     unsigned int VAO, VBO, EBO;

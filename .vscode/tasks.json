@@ -1,0 +1,97 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "CMake Build",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build/Debug",
+				"--config",
+				"Debug",
+				"--target",
+				"gk-opengl"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "CMake Build Correct",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--config",
+				"Debug",
+				"--target",
+				"gk-opengl"
+			],
+			"isBackground": false,
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "CMake Build Correct",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--config",
+				"Debug",
+				"--target",
+				"gk-opengl"
+			],
+			"group": "build"
+		},
+		{
+			"label": "CMake Build Correct",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--config",
+				"Debug",
+				"--target",
+				"gk-opengl"
+			],
+			"group": "build"
+		},
+		{
+			"label": "CMake Build Correct",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--config",
+				"Debug",
+				"--target",
+				"gk-opengl"
+			],
+			"group": "build"
+		},
+		{
+			"label": "CMake Build Correct",
+			"type": "shell",
+			"command": "cmake",
+			"args": [
+				"--build",
+				"${workspaceFolder}/build",
+				"--config",
+				"Debug",
+				"--target",
+				"gk-opengl"
+			],
+			"group": "build"
+		}
+	]
+}

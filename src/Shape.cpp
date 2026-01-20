@@ -1,7 +1,7 @@
 #include "Shape.h"
 #include <cstddef> // for offsetof
 
-Shape::Shape(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
+SceneObject::SceneObject(const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
     : position(0.0f), rotationAngle(0.0f), rotationAxis(0.0f, 1.0f, 0.0f), scale(1.0f)
 {
     indexCount = static_cast<unsigned int>(indices.size());
@@ -33,14 +33,14 @@ Shape::Shape(const std::vector<Vertex> &vertices, const std::vector<unsigned int
     glBindVertexArray(0);
 }
 
-Shape::~Shape()
+SceneObject::~SceneObject()
 {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
 }
 
-void Shape::Draw(const Shader &shader)
+void SceneObject::Draw(const Shader &shader)
 {
     shader.setMat4("model", GetModelMatrix());
 
@@ -49,7 +49,7 @@ void Shape::Draw(const Shader &shader)
     glBindVertexArray(0);
 }
 
-glm::mat4 Shape::GetModelMatrix() const
+glm::mat4 SceneObject::GetModelMatrix() const
 {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, position);
@@ -58,18 +58,24 @@ glm::mat4 Shape::GetModelMatrix() const
     return model;
 }
 
-void Shape::SetPosition(const glm::vec3 &pos)
+void SceneObject::SetPosition(const glm::vec3 &pos)
 {
     position = pos;
 }
 
-void Shape::SetRotation(float angle, const glm::vec3 &axis)
+void SceneObject::SetRotation(float angle, const glm::vec3 &axis)
 {
     rotationAngle = angle;
     rotationAxis = axis;
 }
 
-void Shape::SetScale(const glm::vec3 &scl)
+void SceneObject::SetScale(const glm::vec3 &scl)
 {
     scale = scl;
+}
+
+void SceneObject::SetObjectColor(const glm::vec3 &color, bool useColor)
+{
+    objectColor = color;
+    useObjectColor = useColor;
 }

@@ -123,7 +123,17 @@ public:
             Zoom = 90.0f;
     }
 
-private:
+    void LookAt(glm::vec3 targetPos)
+    {
+        glm::vec3 direction = glm::normalize(targetPos - Position);
+        Front = direction;
+        Pitch = glm::degrees(asin(direction.y));
+        Yaw = glm::degrees(atan2(direction.z, direction.x));
+        Right = glm::normalize(glm::cross(Front, WorldUp));
+        Up = glm::normalize(glm::cross(Right, Front));
+    }
+
+public:
     void updateCameraVectors()
     {
         glm::vec3 front;
