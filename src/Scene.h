@@ -26,6 +26,9 @@ public:
 
     const std::vector<Light *> &GetLights() const { return lights; }
 
+    // Deferred Shading Display Mode
+    int gBufferDisplayMode = 0; // 0=Combined, 1=Pos, 2=Norm, 3=Alb, 4=Spec
+
     // Fog settings
     bool fogEnabled = false;
     glm::vec3 fogColor = glm::vec3(0.5f, 0.5f, 0.5f);

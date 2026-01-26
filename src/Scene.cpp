@@ -61,7 +61,13 @@ void Scene::Draw()
     // --- Deferred Shading ---
     if (gBufferShader && lightingPassShader)
     {
+        // Save current clear color
+        GLfloat clearColor[4];
+        glGetFloatv(GL_COLOR_CLEAR_VALUE, clearColor);
+
         // 1. Geometry Pass: Render all geometric/color data to g-buffer
+        // Clear g-buffer to black (0,0,0) so we can detect background (empty) pixels
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -88,6 +94,8 @@ void Scene::Draw()
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         // 2. Lighting Pass: Calculate lighting by iterating over screen filled quad
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]); // Restore clear color
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         lightingPassShader->use();
 
@@ -110,6 +118,8 @@ void Scene::Draw()
         lightingPassShader->setVec3("fogColor", fogColor);
         lightingPassShader->setFloat("fogStart", fogStart);
         lightingPassShader->setFloat("fogEnd", fogEnd);
+
+        lightingPassShader->setInt("displayMode", gBufferDisplayMode);
 
         RenderQuad();
 

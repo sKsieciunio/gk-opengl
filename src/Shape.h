@@ -34,7 +34,7 @@ public:
     glm::vec3 scale;
 
     bool useObjectColor = false;
-    glm::vec3 objectColor = glm::vec3(1.0f);
+    glm::vec3 objectColor = glm::vec4(1.0f);
 
 private:
     unsigned int VAO, VBO, EBO;

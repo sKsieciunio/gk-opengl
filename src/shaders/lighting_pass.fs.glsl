@@ -30,6 +30,8 @@ uniform vec3 fogColor;
 uniform float fogStart;
 uniform float fogEnd;
 
+uniform int displayMode; // 0=Light, 1=Pos, 2=Norm, 3=Alb, 4=Spec
+
 vec3 CalcDirLight(Light light, vec3 normal, vec3 viewDir);
 vec3 CalcPointLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir);
 vec3 CalcSpotLight(Light light, vec3 normal, vec3 fragPos, vec3 viewDir);
@@ -42,9 +44,11 @@ void main()
     vec3 Diffuse = texture(gAlbedoSpec, TexCoords).rgb;
     float Specular = texture(gAlbedoSpec, TexCoords).a;
     
-    // Optimization: Discard if normal is zero (background) - optional
+    // Optimization: Discard if normal is zero (background)
     if(length(Normal) == 0.0) {
-       // discard; // Or handle background
+       if (displayMode == 0) // Only discard in lighting mode to reveal skybox
+           discard;
+       // For debug modes, fall through to display the raw G-Buffer value (typically black/zero)
     }
 
     // In View Space, the viewer is at (0,0,0)
@@ -82,7 +86,11 @@ void main()
         lighting = mix(fogColor, lighting, fogFactor);
     }
     
-    FragColor = vec4(lighting, 1.0);
+    if (displayMode == 1)      FragColor = vec4(FragPos, 1.0);
+    else if (displayMode == 2) FragColor = vec4(Normal, 1.0);
+    else if (displayMode == 3) FragColor = vec4(Diffuse, 1.0);
+    else if (displayMode == 4) FragColor = vec4(vec3(Specular), 1.0);
+    else                       FragColor = vec4(lighting, 1.0);
 }
 
 vec3 CalcDirLight(Light light, vec3 normal, vec3 viewDir)

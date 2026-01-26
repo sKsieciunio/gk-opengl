@@ -225,6 +225,9 @@ int main()
         glm::vec3 clearCol = glm::mix(nightColor, dayColor, sin(timeOfDay * 3.14159f));
         sunLight->color = glm::vec3(sin(timeOfDay * 3.14159f));
 
+        // Sync fog color with environment
+        scene.fogColor = clearCol;
+
         if (scene.fogEnabled)
         {
             glClearColor(scene.fogColor.r, scene.fogColor.g, scene.fogColor.b, 1.0f);
@@ -260,11 +263,16 @@ int main()
             if (activeCam->Type == ProjectionType::Perspective)
                 ImGui::SliderFloat("FOV", &activeCam->Zoom, 1.0f, 90.0f);
         }
+        if (ImGui::CollapsingHeader("Deferred Shading"))
+        {
+            const char *modes[] = {"Combined Lighting", "Position (View Space)", "Normal (View Space)", "Albedo", "Specular"};
+            ImGui::Combo("Display Mode", &scene.gBufferDisplayMode, modes, 5);
+        }
         if (ImGui::CollapsingHeader("Environment"))
         {
             ImGui::SliderFloat("Time of Day", &timeOfDay, 0.0f, 1.0f);
             ImGui::Checkbox("Fog Enabled", &scene.fogEnabled);
-            ImGui::ColorEdit3("Fog Color", &scene.fogColor[0]);
+            // ImGui::ColorEdit3("Fog Color", &scene.fogColor[0]); // Now automatic
             ImGui::SliderFloat("Fog Start", &scene.fogStart, 0.1f, 50.0f);
             ImGui::SliderFloat("Fog End", &scene.fogEnd, 20.0f, 200.0f);
         }
